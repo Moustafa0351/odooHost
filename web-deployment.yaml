@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.34.0 (cbf2835db)
+  labels:
+    io.kompose.service: web
+  name: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.34.0 (cbf2835db)
+      labels:
+        io.kompose.service: web
+    spec:
+      containers:
+        - env:
+            - name: HOST
+              value: postgres
+            - name: PASSWORD
+              value: odoo
+            - name: USER
+              value: odoo
+          image: odoo:17.0
+          name: web
+          ports:
+            - containerPort: 8069
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/odoo
+              name: odoo-web-data
+            - mountPath: /etc/odoo
+              name: web-claim1
+            - mountPath: /mnt/extra-addons
+              name: web-claim2
+      restartPolicy: Always
+      volumes:
+        - name: odoo-web-data
+          persistentVolumeClaim:
+            claimName: odoo-web-data
+        - name: web-claim1
+          persistentVolumeClaim:
+            claimName: web-claim1
+        - name: web-claim2
+          persistentVolumeClaim:
+            claimName: web-claim2

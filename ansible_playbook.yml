@@ -1,0 +1,33 @@
+--- 
+-  name: "Build odoo Image "
+   hosts: localhost
+
+   tasks: 
+   - name: Change to /home/mostafa/odoohost directory
+     ansible.builtin.shell: |
+       cd /home/mostafa/odoohost
+      
+     ignore_errors: yes
+
+
+   - name: down curren running instance 
+     ansible.builtin.shell: |
+       docker compose down 
+      
+     ignore_errors: yes
+
+   - name: up new instance
+     ansible.builtin.shell: |
+       docker compose up -d
+      
+     ignore_errors: yes
+     register: task_output
+     no_log: false
+
+   - name: Show output of Docker Compose Up
+     debug:
+       var: task_output.stdout
+
+     
+
+     
